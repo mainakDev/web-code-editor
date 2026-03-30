@@ -1,0 +1,142 @@
+/* --- GLOBAL RESET (Kills rogue scrollbars) --- */
+body, html, #root {  
+  margin: 0; 
+  padding: 0; 
+  width: 100%;  
+  height: 100%; 
+  background-color: #1e1e1e; 
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden; 
+}
+
+.app-container {
+  display: flex; 
+  flex-direction: column; 
+  width: 100%; 
+  height: 100%; 
+  overflow: hidden;
+}
+
+/* --- APP HEADER --- */
+.app-header {
+  display: flex; align-items: center; height: 40px; background-color: #333333;
+  border-bottom: 1px solid #1e1e1e; padding: 0 10px; flex-shrink: 0;
+}
+.hamburger-btn {
+  background: transparent; border: none; color: #cccccc; font-size: 20px;
+  cursor: pointer; margin-right: 15px; padding: 5px 10px; border-radius: 4px;
+}
+.hamburger-btn:hover { background-color: #444; color: #fff; }
+.logo { font-size: 13px; letter-spacing: 1px; color: #cccccc; text-transform: uppercase;}
+
+/* --- WORKSPACE --- */
+.workspace { flex: 1; overflow: hidden; }
+
+/* --- DRAG HANDLES --- */
+.resize-handle {
+  width: 4px; background-color: #333; cursor: col-resize;
+  position: relative; transition: background-color 0.2s;
+}
+.resize-handle:hover, .resize-handle[data-resize-handle-state="drag"] {
+  background-color: #007acc;
+}
+.resize-handle::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -4px; right: -4px; z-index: 10;
+}
+
+/* --- SIDEBAR --- */
+.sidebar-panel { height: 100%; }
+.sidebar {
+  height: 100%; background-color: #252526; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;
+}
+.sidebar-header {
+  display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; flex-shrink: 0;
+}
+.sidebar-header h2 { margin: 0; font-size: 11px; text-transform: uppercase; color: #ccc; }
+.new-file-btn { 
+  background: transparent; color: #ccc; border: 1px solid #444; 
+  padding: 3px 8px; cursor: pointer; border-radius: 3px; font-size: 12px; white-space: nowrap;
+}
+.new-file-btn:hover { background: #007acc; border-color: #007acc; color: white; }
+
+/* --- FILE TREE UI --- */
+.file-list { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+  overflow-y: auto;
+}
+
+.tree-node {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  padding: 6px 15px; 
+  cursor: pointer; 
+  font-size: 13px; 
+  color: #ccc;
+  user-select: none;
+}
+.tree-node:hover { background-color: #2a2d2e; color: #fff; }
+.tree-node.active { background-color: #37373d; color: #fff; }
+
+.node-label { display: flex; align-items: center; gap: 6px; overflow: hidden; }
+.node-icon { font-size: 14px; flex-shrink: 0; }
+.node-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+
+/* The tiny action buttons that appear when you hover over a folder */
+.sidebar-actions { display: none; gap: 4px; align-items: center; }
+.tree-node:hover .sidebar-actions { display: flex; }
+
+.action-btn { background: none; border: none; cursor: pointer; color: #999; padding: 0 3px; font-size: 12px; }
+.action-btn:hover { color: #fff; }
+.delete-btn { background: none; border: none; color: #ff6b6b; cursor: pointer; padding: 0 3px; font-size: 12px;}
+
+/* --- TABS --- */
+.tabs {
+  display: flex; background-color: #252526; height: 35px; min-height: 35px; overflow-x: auto; overflow-y: hidden;
+}
+.tabs::-webkit-scrollbar { height: 4px; } /* Tiny scrollbar for tabs */
+.tabs::-webkit-scrollbar-thumb { background-color: #444; }
+
+.tab {
+  padding: 0 15px; display: flex; align-items: center; cursor: pointer;
+  background-color: #2d2d2d; border-right: 1px solid #1e1e1e;
+  font-size: 13px; color: #969696; user-select: none; white-space: nowrap;
+}
+.tab.active { background-color: #1e1e1e; color: #fff; border-top: 1px solid #007acc; }
+.close-tab-btn {
+  background: none; border: none; color: #969696; cursor: pointer; margin-left: 8px; border-radius: 3px;
+}
+.close-tab-btn:hover { background-color: #444; color: #fff; }
+
+/* --- EDITOR & TOOLS PANE --- */
+.editor-pane, .tools-pane { height: 100%; width: 100%; display: flex; flex-direction: column; background-color: #1e1e1e; overflow: hidden; }
+.code-editor { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.empty-editor-state { flex: 1; display: flex; justify-content: center; align-items: center; color: #666; font-size: 14px;}
+
+/* CodeMirror Full Height Overrides */
+.cm-theme, .cm-editor { height: 100% !important; width: 100%; text-align: left !important;}
+.cm-scroller { height: 100% !important; overflow: auto !important; align-items: flex-start !important; justify-content: flex-start !important;}
+.cm-gutters { min-height: 100% !important; background-color: #1e1e1e !important; border-right: 1px solid #333 !important; }
+.cm-content { padding-top: 10px !important; padding-bottom: 20px !important; }
+
+/* Tools Area Visibility */
+.tools-content { flex: 1; position: relative; overflow: hidden;}
+.preview-iframe { width: 100%; height: 100%; border: none; background-color: #fff; }
+.terminal-container { 
+  height: 100%; 
+  width: 100%; 
+  padding: 10px; 
+  background-color: #1e1e1e; 
+  box-sizing: border-box; 
+  text-align: left !important; /* Forces all text to the left */
+}
+.visible { display: block; }
+.hidden { display: none; }
+
+/* Ensures the internal xterm canvas/rows obey the left alignment */
+.xterm {
+  text-align: left !important;
+}

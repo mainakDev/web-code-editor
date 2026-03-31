@@ -186,6 +186,72 @@ function App() {
     setFiles([...files, newFolder]);
   };
 
+  const handleImport = async (e) => {
+    const uploadedFiles = Array.from(e.target.files);
+    if (uploadedFiles.length === 0) return;
+
+    const newItems = [];
+    const folderMap = new Map(); 
+
+    for (const file of uploadedFiles) {
+      const path = file.webkitRelativePath || file.name;
+      const pathParts = path.split('/');
+      const fileName = pathParts.pop(); 
+
+      let currentParentId = null;
+      let currentPath = "";
+
+      for (const folderName of pathParts) {
+        currentPath = currentPath ? `${currentPath}/${folderName}` : folderName;
+
+        if (!folderMap.has(currentPath)) {
+          const existingFolder = files.find(f => f.type === 'folder' && f.name === folderName && f.parentId === currentParentId);
+          let folderId = existingFolder ? existingFolder.id : Date.now().toString() + Math.random().toString(36).substr(2, 9);
+          
+          if (!existingFolder) {
+            newItems.push({ id: folderId, name: folderName, type: 'folder', parentId: currentParentId });
+          }
+          folderMap.set(currentPath, folderId);
+        }
+        currentParentId = folderMap.get(currentPath);
+      }
+
+      // --- NEW: Image Detection & Reading Logic ---
+      const isImage = fileName.match(/\.(jpeg|jpg|gif|png|svg|webp|ico)$/i);
+      let content = '';
+      let language = 'javascript';
+
+      if (isImage) {
+        // Read as a Base64 Data URL so we can put it directly into an <img src="...">
+        content = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target.result);
+          reader.readAsDataURL(file);
+        });
+        language = 'image';
+      } else {
+        // Read as normal text for CodeMirror
+        content = await file.text();
+        if (fileName.endsWith('.html')) language = 'html';
+        else if (fileName.endsWith('.css')) language = 'css';
+        else if (fileName.endsWith('.json')) language = 'json';
+      }
+
+      newItems.push({
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        name: fileName,
+        type: 'file',
+        parentId: currentParentId,
+        language,
+        content,
+        isImage: !!isImage // Store a boolean flag to make rendering easier
+      });
+    }
+
+    setFiles(prevFiles => [...prevFiles, ...newItems]);
+    e.target.value = '';
+  };
+
   const handleOpenFile = (id) => {
     if (!openFileIds.includes(id)) setOpenFileIds([...openFileIds, id]);
     setActiveFileId(id);
@@ -284,6 +350,7 @@ function App() {
             handleCreateFile={handleCreateFile} 
             handleCreateFolder={handleCreateFolder} 
             handleDeleteFileFromSystem={handleDeleteFileFromSystem} 
+            handleImport={handleImport} /* <-- Add this line! */
           />
         )}
 
